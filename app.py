@@ -2,10 +2,6 @@ import logging
 import telegram
 from telegram.ext import Updater, MessageHandler, Filters 
 
-# metodo para rastrear eventos (para ver lo que hace el bot)
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s,")
-logger = logging.getLogger()
-
 # token del bot 
 TOKEN = '6431750259:AAFkqdNr4w4e_gsPlpDiS1FJq8-g6y3E6Is'
        
