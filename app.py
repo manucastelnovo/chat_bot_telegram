@@ -25,4 +25,3 @@ dp.add_handler(MessageHandler (Filters.text, print_message))
 
 # polling o sondeo 
 updater.start_polling()
-updater.idle() 
