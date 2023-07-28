@@ -4,7 +4,7 @@ from telegram.ext import Updater, MessageHandler, Filters
 class TelegramService(): 
 
     def __init__(self, env_token): 
-        self.message = None 
+        self.msj = None 
         self.my_bot = telegram.Bot(token =  env_token)
         self.create_listener()
        
@@ -14,7 +14,8 @@ class TelegramService():
         dp.add_handler(MessageHandler (Filters.text, self.print_message))
         updater.start_polling()
        
-    def print_message (update, context, self):   
-        self.message = update.message.text
+    def print_message (self, update, context):   
+        self.msj = update.message.text
+        print(self.msj) 
         
    

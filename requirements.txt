@@ -3,3 +3,4 @@ openpyxl
 pushbullet.py==0.9.1
 python-dotenv
 python-telegram-bot==13.7
+langchain==0.0.246

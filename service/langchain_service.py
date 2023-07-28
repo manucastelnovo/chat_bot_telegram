@@ -2,7 +2,7 @@
 from langchain.text_splitter import CharacterTextSplitter
 
 with open('Apocalipsis.txt') as f:
-    state_of_the_union = f.read()
+    document = f.read()
 
 text_splitter = CharacterTextSplitter(        
     separator = ".\n",
@@ -10,11 +10,13 @@ text_splitter = CharacterTextSplitter(
     chunk_overlap  = 200,
     length_function = len,
 )
-texts = text_splitter.create_documents([state_of_the_union])
+
+texts = text_splitter.create_documents([document])
 metadatas = []
+
 for text in texts:
     metadatas.append({'document':text.page_content})
 
 
-documents = text_splitter.create_documents([state_of_the_union], metadatas=metadatas)
+documents = text_splitter.create_documents([document], metadatas=metadatas)
 print(documents[1])
