@@ -6,7 +6,7 @@ class TelegramService():
     def __init__(self, env_token): 
         self.message = None 
         self.my_bot = telegram.Bot(token =  env_token)
-        self.create_listener
+        self.create_listener()
        
     def create_listener(self): 
         updater = Updater(self.my_bot.token, use_context=True)
