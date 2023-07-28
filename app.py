@@ -11,6 +11,8 @@ TOKEN = '6431750259:AAFkqdNr4w4e_gsPlpDiS1FJq8-g6y3E6Is'
        
 # lee y valida el texto 
 def echo (update, context): 
+    bot = context.bot 
+    chatId = update.message.chat_id
     
     # obtener el id del mensaje 
     updateMsg = getattr(update, 'message', None) # guardamos todos los datos del mensaje 
@@ -20,6 +22,8 @@ def echo (update, context):
     text = update.message.text
 
     print(text)
+       
+    
     
 # main
 if __name__ == '__main__': 
