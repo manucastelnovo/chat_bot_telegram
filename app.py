@@ -1,41 +1,26 @@
-import logging 
-import telegram
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters 
+from service.telegram_service import TelegramService
+from service.langchain_service import embeddings,texts
+from service.pinecone_service import index
 
-# metodo para rastrear eventos (para ver lo que hace el bot)
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s,")
-logger = logging.getLogger()
+TOKEN = ''
 
-# token del bot 
-TOKEN = '6431750259:AAFkqdNr4w4e_gsPlpDiS1FJq8-g6y3E6Is'
-       
-# lee y valida el texto 
-def echo (update, context): 
-    bot = context.bot 
-    chatId = update.message.chat_id
-    
-    # obtener el id del mensaje 
-    updateMsg = getattr(update, 'message', None) # guardamos todos los datos del mensaje 
-    messageId = updateMsg.message_id 
-    
-    # obtener el texto que envio al chat
-    text = update.message.text
-
-    print(text)
-       
-    
-    
-# main
 if __name__ == '__main__': 
-    # obtener info del bot 
-    myBot = telegram.Bot(token =  TOKEN)
+    listener = TelegramService(TOKEN)
 
-updater = Updater(myBot.token, use_context=True) # updater: recibe mensajes y comandos 
-dp = updater.dispatcher  # dispathcher: comandos que puede recibir 
+# hacer el split
 
-# mensajes!
-dp.add_handler(MessageHandler (Filters.text, echo))
+# embedizar
 
-# polling 
-updater.start_polling()
-updater.idle() 
+vectors=[]
+print(texts)
+
+for embedding,i in enumerate(embeddings):
+   
+    vectors.append({
+            'id':i, 
+            'values':embedding, 
+            'metadata':{'page_content': texts[i]},
+            })
+
+print(vectors)
+upsert_response = index.upsert(vectors)
