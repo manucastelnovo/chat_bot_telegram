@@ -4,78 +4,60 @@ import openai
 import pinecone 
 import telegram
 from telegram.ext import Updater, MessageHandler, Filters 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+open_ai_api_key = os.getenv("OPEN_AI_KEY")
+pinecone_api_key=os.getenv("PINECONE_API_KEY")
+
+mock_message = 'como calculo mi vacaciones'
+namespaces = ['aguinaldo','vacaciones']
+namespace_on_message = ''
+
+def detect_namespace(message):
+    for word in message.split():
+        if word in namespaces:
+            namespace_on_message = word
+            print(namespace_on_message)
 
 
-
-with open('Apocalipsis.txt') as f:
-    document = f.read()
-
-text_splitter = CharacterTextSplitter(
-    separator="\n",
-    chunk_size=1000,
-    chunk_overlap=200,
-    length_function=len,
-)
-
-# texts = text_splitter.create_documents([document])
-# metadatas = []
-
-# for text in texts:
-#     metadata = {
-#         'document': text.page_content,
-#     }
-#     metadatas.append(metadata)
-
-# documents = text_splitter.create_documents([document], metadatas=metadatas)
-# print(documents[0])
 
 
 def semantic_search(message):
-    embeddings_model = OpenAIEmbeddings(openai_api_key="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")
+    embeddings_model = OpenAIEmbeddings(openai_api_key=open_ai_api_key)
 
 
 
 
-    # embeddings = embeddings_model.embed_documents(
-    #     documents[0].page_content
-    # )
-    # print(len(embeddings[0]))
-    # print(embeddings)
+    pinecone.init(api_key=pinecone_api_key, environment='asia-southeast1-gcp') 
+    index = pinecone.Index('trabajo') 
 
-
-
-
-    pinecone.init(api_key='f39718d6-40ba-465c-87bc-78678de8bb52', environment='asia-southeast1-gcp') 
-    index = pinecone.Index('apocalipsis') 
-
-    # upsert_response = index.upsert(
-    #     vectors=[{
-    #         'id':'vec1', 
-    #         'values':embeddings[0], 
-    #         'metadata':{'page_content': documents[0].page_content,
-
-    #            }}])
+  
 
     print(f"pregunte : {message}")
     query = message
 
     # create the query vector
     model = embeddings_model.embed_documents(query)
-
+    print(model)
 
     # xq = model.tolist()
 
     # now query
-    response = index.query([model[0]], top_k=5, include_metadata=True)
+    response = index.query(model[0], top_k=5, include_metadata=True)
     # print(response.matches[0].metadata)
 
     print('estos son los vectores de pinecone')
     print(str(response.matches))
 
-    openai.api_key = "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"
+    openai.api_key = open_ai_api_key
 
-    prompt=f"Eres un chatbot de whatsapp, este es el contexto de mi respuesta: {response.matches[0].metadata} y este el mensaje del usuario:{query} puedes responder como si fueras un narrador que esta contando la historia del apocalipsis"
+    prompt=f"Eres un chatbot de whatsapp, este es el contexto para tu respuesta: {response.matches[0].metadata} y este el mensaje del usuario:{query} puedes responder como si fueras abogado experto en el codigo del trabajador paraguayo"
     
+    print(prompt)
+
     response_openai = openai.Completion.create(
           model="text-davinci-003",
           prompt=prompt,
@@ -108,5 +90,5 @@ def print_message (update,context):
     return msj
         
    
-create_listener()
+# create_listener()
 
