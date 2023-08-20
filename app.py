@@ -1,6 +1,4 @@
-import os
-from dotenv import load_dotenv
+from service.langchain_service import create_listener
 
-load_dotenv()
 
-api_key = os.getenv("OPEN_AI_KEY")
+create_listener()
