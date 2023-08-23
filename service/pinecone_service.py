@@ -1,19 +1,27 @@
 from langchain.embeddings import OpenAIEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 import openai
 import pinecone 
+import time
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+open_ai_api_key = os.getenv("OPEN_AI_KEY")
+pinecone_api_key=os.getenv("PINECONE_API_KEY")
 
 
 
-
-with open('Apocalipsis.txt') as f:
+with open('codigo_del_trabajador.txt') as f:
     document = f.read()
 
-text_splitter = CharacterTextSplitter(
-    separator="\n",
-    chunk_size=1000,
+text_splitter = RecursiveCharacterTextSplitter(
+    separators= ["\nARTÍCULO"],
+    chunk_size=1500,
     chunk_overlap=200,
     length_function=len,
+    is_separator_regex=False
 )
 
 texts = text_splitter.create_documents([document])
@@ -25,19 +33,20 @@ for text in texts:
     }
     metadatas.append(metadata)
 
+
 documents = text_splitter.create_documents([document], metadatas=metadatas)
-print(documents[0])
 
 
 
-embeddings_model = OpenAIEmbeddings(openai_api_key="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")
+
+embeddings_model = OpenAIEmbeddings(openai_api_key=open_ai_api_key)
 
 # print(len(embeddings[0]))
 # print(embeddings)
 
 contador= 1
-pinecone.init(api_key='f39718d6-40ba-465c-87bc-78678de8bb52', environment='asia-southeast1-gcp') 
-index = pinecone.Index('apocalipsis') 
+pinecone.init(api_key=pinecone_api_key, environment='asia-southeast1-gcp') 
+index = pinecone.Index('trabajo') 
 for indice, document_index in enumerate(documents):
 
     embeddings = embeddings_model.embed_documents(
@@ -48,9 +57,11 @@ for indice, document_index in enumerate(documents):
             'id':str(contador), 
             'values':embeddings[0], 
             'metadata':{'page_content': documents[indice].page_content,
-               }}])
+               }}],
+               namespace='example-namespace')
     contador=contador+1
     print(upsert_response)
+    print(documents[indice].page_content)
     # print(embeddings)
     # print(indice)
 
